@@ -43,17 +43,13 @@
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
-
     </el-form>
   </div>
 </template>
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { getPublicKey } from '@/api/user'
 
 export default {
   name: 'Login',
@@ -75,7 +71,8 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: '123456',
+        privateKeyId: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -83,7 +80,11 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      rsa: {
+        privateKeyId: '',
+        publicKey: ''
+      }
     }
   },
   watch: {
@@ -93,6 +94,9 @@ export default {
       },
       immediate: true
     }
+  },
+  created() {
+    this.getPublicKey()
   },
   methods: {
     showPwd() {
@@ -108,7 +112,9 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
+          console.log(this.loginForm)
           this.loading = true
+          this.loginForm.password = this.Rsa.encrypt(this.loginForm.password, this.rsa.publicKey)
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
@@ -119,6 +125,12 @@ export default {
           console.log('error submit!!')
           return false
         }
+      })
+    },
+    getPublicKey() {
+      getPublicKey().then(response => {
+        this.rsa = response.data
+        this.loginForm.privateKeyId = this.rsa.privateKeyId
       })
     }
   }
