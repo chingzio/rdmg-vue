@@ -49,7 +49,6 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-import { getPublicKey } from '@/api/user'
 
 export default {
   name: 'Login',
@@ -71,8 +70,7 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '123456',
-        privateKeyId: ''
+        password: '123456'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -96,7 +94,6 @@ export default {
     }
   },
   created() {
-    this.getPublicKey()
   },
   methods: {
     showPwd() {
@@ -114,7 +111,6 @@ export default {
         if (valid) {
           console.log(this.loginForm)
           this.loading = true
-          this.loginForm.password = this.Rsa.encrypt(this.loginForm.password, this.rsa.publicKey)
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
@@ -125,12 +121,6 @@ export default {
           console.log('error submit!!')
           return false
         }
-      })
-    },
-    getPublicKey() {
-      getPublicKey().then(response => {
-        this.rsa = response.data
-        this.loginForm.privateKeyId = this.rsa.privateKeyId
       })
     }
   }

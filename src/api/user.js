@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function login(data) {
   return request({
-    url: '/sys/noauth/user/loginRsa',
+    url: '/noauth/user/login',
     method: 'post',
     data
   })
@@ -10,21 +10,15 @@ export function login(data) {
 
 export function getInfo() {
   return request({
-    url: '/sys/auth/user/info',
+    url: '/auth/user/info',
     method: 'get'
   })
 }
 
 export function logout() {
   return request({
-    url: '/sys/auth/user/logout',
+    url: '/auth/user/logout',
     method: 'post'
   })
 }
 
-export function getPublicKey() {
-  return request({
-    url: '/sys/noauth/user/getPublicKey',
-    method: 'get'
-  })
-}
